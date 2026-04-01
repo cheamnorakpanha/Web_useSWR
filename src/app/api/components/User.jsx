@@ -20,8 +20,14 @@ const emptyUser = {
   emergencyContact: { name: "", phone: "" },
 };
 
-export default function Users() {
-  const { data = [], mutate } = useSWR("/api/users", fetcher);
+export default function Users({ fallbackData }) {
+  const {
+    data = [],
+    mutate,
+    isLoading,
+  } = useSWR("/api/users", fetcher, {
+    fallbackData,
+  });
 
   const [form, setForm] = useState(emptyUser);
   const [editingId, setEditingId] = useState(null);
