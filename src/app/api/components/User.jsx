@@ -6,6 +6,7 @@ import { fetcher } from "@/lib/fetcher";
 
 const emptyUser = {
   name: "",
+  photo: "",
   uniqueIdNumber: "",
   dateOfBirth: "",
   expiryDate: "",
@@ -21,11 +22,7 @@ const emptyUser = {
 };
 
 export default function Users({ fallbackData }) {
-  const {
-    data = [],
-    mutate,
-    isLoading,
-  } = useSWR("/api/users", fetcher, {
+  const { data = [], mutate } = useSWR("/api/users", fetcher, {
     fallbackData,
   });
 
@@ -116,7 +113,7 @@ export default function Users({ fallbackData }) {
                   user.photo ||
                   `https://api.dicebear.com/7.x/personas/svg?seed=${user.name}`
                 }
-                className="w-16 h-16 rounded-full bg-gray-200 border"
+                className="w-16 h-16 rounded-full border bg-gray-100"
               />
 
               <div className="flex-1">
@@ -133,21 +130,21 @@ export default function Users({ fallbackData }) {
             <div className="mt-4 flex gap-2">
               <button
                 onClick={() => openEdit(user)}
-                className="bg-yellow-400 hover:bg-yellow-500 px-3 py-1 rounded"
+                className="bg-yellow-400 px-3 py-1 rounded"
               >
                 Edit
               </button>
 
               <button
                 onClick={() => deleteUser(user.id)}
-                className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+                className="bg-red-500 text-white px-3 py-1 rounded"
               >
                 Delete
               </button>
 
               <button
                 onClick={() => setOpenId(openId === user.id ? null : user.id)}
-                className="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded"
+                className="bg-gray-200 px-3 py-1 rounded"
               >
                 {openId === user.id ? "Hide" : "Details"}
               </button>
@@ -155,36 +152,31 @@ export default function Users({ fallbackData }) {
 
             {/* DETAILS */}
             {openId === user.id && (
-              <div className="mt-4 border-t pt-4 grid grid-cols-2 gap-2 text-sm text-gray-800">
+              <div className="mt-4 border-t pt-4 grid grid-cols-2 gap-2 text-sm">
                 <p>
                   <b>Gender:</b> {user.gender}
                 </p>
                 <p>
                   <b>DOB:</b> {user.dateOfBirth}
                 </p>
-
                 <p>
                   <b>Nationality:</b> {user.nationality}
                 </p>
                 <p>
                   <b>Blood:</b> {user.bloodType}
                 </p>
-
                 <p className="col-span-2">
                   <b>Address:</b> {user.address}
                 </p>
-
                 <p>
                   <b>Issued:</b> {user.issuedDate}
                 </p>
                 <p>
                   <b>Expiry:</b> {user.expiryDate}
                 </p>
-
                 <p className="col-span-2">
                   <b>Authority:</b> {user.issuingAuthority}
                 </p>
-
                 <p className="col-span-2">
                   <b>Emergency:</b> {user.emergencyContact?.name} (
                   {user.emergencyContact?.phone})
@@ -198,44 +190,138 @@ export default function Users({ fallbackData }) {
       {/* MODAL */}
       {showForm && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
-          <div className="bg-white w-full max-w-xl p-6 rounded-xl space-y-3 overflow-y-auto max-h-[90vh]">
+          <div className="bg-white w-full max-w-xl p-6 rounded-xl space-y-4 overflow-y-auto max-h-[90vh]">
             <h2 className="text-xl font-bold">
               {editingId ? "Edit User" : "Add User"}
             </h2>
 
-            {Object.keys(emptyUser).map((key) => {
-              if (key === "emergencyContact") return null;
+            {/* IMAGE PREVIEW + INPUT */}
+            <div className="flex items-center gap-4">
+              <img
+                src={
+                  form.photo ||
+                  `https://api.dicebear.com/7.x/personas/svg?seed=${form.name || "User"}`
+                }
+                className="w-16 h-16 rounded-full border bg-gray-100"
+              />
 
-              return (
-                <input
-                  key={key}
-                  name={key}
-                  placeholder={key}
-                  value={form[key]}
-                  onChange={handleChange}
-                  className="w-full border border-gray-300 text-gray-900 placeholder:text-gray-500 p-2 rounded"
-                />
-              );
-            })}
+              <input
+                name="photo"
+                placeholder="Image URL"
+                value={form.photo}
+                onChange={handleChange}
+                className="flex-1 border p-2 rounded"
+              />
+            </div>
 
+            {/* BASIC */}
+            <input
+              name="name"
+              placeholder="Name"
+              value={form.name}
+              onChange={handleChange}
+              className="input"
+            />
+            <input
+              name="email"
+              placeholder="Email"
+              value={form.email}
+              onChange={handleChange}
+              className="input"
+            />
+            <input
+              name="phoneNumber"
+              placeholder="Phone"
+              value={form.phoneNumber}
+              onChange={handleChange}
+              className="input"
+            />
+
+            {/* INFO */}
+            <input
+              name="uniqueIdNumber"
+              placeholder="ID Number"
+              value={form.uniqueIdNumber}
+              onChange={handleChange}
+              className="input"
+            />
+            <input
+              name="gender"
+              placeholder="Gender"
+              value={form.gender}
+              onChange={handleChange}
+              className="input"
+            />
+            <input
+              name="bloodType"
+              placeholder="Blood Type"
+              value={form.bloodType}
+              onChange={handleChange}
+              className="input"
+            />
+
+            <input
+              name="dateOfBirth"
+              type="date"
+              value={form.dateOfBirth}
+              onChange={handleChange}
+              className="input"
+            />
+            <input
+              name="expiryDate"
+              type="date"
+              value={form.expiryDate}
+              onChange={handleChange}
+              className="input"
+            />
+            <input
+              name="issuedDate"
+              type="date"
+              value={form.issuedDate}
+              onChange={handleChange}
+              className="input"
+            />
+
+            <input
+              name="nationality"
+              placeholder="Nationality"
+              value={form.nationality}
+              onChange={handleChange}
+              className="input"
+            />
+            <input
+              name="address"
+              placeholder="Address"
+              value={form.address}
+              onChange={handleChange}
+              className="input"
+            />
+            <input
+              name="issuingAuthority"
+              placeholder="Authority"
+              value={form.issuingAuthority}
+              onChange={handleChange}
+              className="input"
+            />
+
+            {/* EMERGENCY */}
             <p className="font-semibold">Emergency Contact</p>
-
             <input
               name="name"
               placeholder="Name"
               value={form.emergencyContact.name}
               onChange={handleEmergency}
-              className="w-full border p-2 rounded"
+              className="input"
             />
-
             <input
               name="phone"
               placeholder="Phone"
               value={form.emergencyContact.phone}
               onChange={handleEmergency}
-              className="w-full border p-2 rounded"
+              className="input"
             />
 
+            {/* ACTIONS */}
             <div className="flex justify-end gap-2 pt-4">
               <button
                 onClick={() => setShowForm(false)}
@@ -254,6 +340,16 @@ export default function Users({ fallbackData }) {
           </div>
         </div>
       )}
+
+      {/* STYLE */}
+      <style jsx>{`
+        .input {
+          width: 100%;
+          border: 1px solid #ccc;
+          padding: 8px;
+          border-radius: 6px;
+        }
+      `}</style>
     </div>
   );
 }
